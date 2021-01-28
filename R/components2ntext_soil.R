@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-components2ntext_soil <- function(sand_all,clay_all){
-
-  # print(length(sand_all))
-  sand_all <- sand_all*100; clay_all <- clay_all*100
-  silt_all <- 100 - sand_all - clay_all
-=======
 components2ntext_soil <- function(sand_all,silt_all,clay_all){
 
   # print(length(sand_all))
   sand_all <- sand_all*100; silt_all <- silt_all*100; clay_all <- clay_all*100
->>>>>>> Very first commit
+
   ntext_soil_all <- NA*sand_all
 
 
