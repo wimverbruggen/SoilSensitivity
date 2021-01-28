@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1597844206386.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1321076577",
+    "id" : "6004CC88",
+    "lastKnownWriteTime" : 1597958932,
+    "last_content_update" : 1597958932023,
+    "path" : "~/Documents/projects/SoilSensitivity/scripts/explore_HWSD.R",
+    "project_path" : "scripts/explore_HWSD.R",
+    "properties" : {
+        "cursorPosition" : "64,2",
+        "scrollLine" : "0",
+        "tempName" : "Untitled2"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1597860150907.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3603126190",
+    "id" : "3A8B1474",
+    "lastKnownWriteTime" : 1597343548,
+    "last_content_update" : 1597343548,
+    "path" : "~/Documents/projects/SoilSensitivity/scripts/check_singleOP.R",
+    "project_path" : "scripts/check_singleOP.R",
+    "properties" : {
+        "cursorPosition" : "12,0",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,26 @@
+[general]
+creator=R package 'raster'
+created=2020-11-19 16:37:35
+[georeference]
+nrows=136
+ncols=216
+xmin=-85
+ymin=-20
+xmax=-31
+ymax=14
+projection=+proj=longlat +datum=WGS84 +no_defs
+[data]
+datatype=FLT4S
+byteorder=little
+nbands=1
+bandorder=BIL
+categorical=FALSE
+minvalue=0
+maxvalue=0.623963176674313
+nodatavalue=-3.4e+38
+[legend]
+legendtype=
+values=
+color=
+[description]
+layername=clay_100.200

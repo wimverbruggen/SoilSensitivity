@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1597860123869.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "79929067",
+    "id" : "31895A48",
+    "lastKnownWriteTime" : 1597860286,
+    "last_content_update" : 1597860286695,
+    "path" : "~/Documents/projects/SoilSensitivity/scripts/analyze_SoilSens.R",
+    "project_path" : "scripts/analyze_SoilSens.R",
+    "properties" : {
+        "cursorPosition" : "61,39",
+        "scrollLine" : "0",
+        "tempName" : "Untitled2"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

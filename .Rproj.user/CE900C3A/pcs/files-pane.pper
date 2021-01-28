@@ -1,0 +1,13 @@
+{
+    "path" : "~/Documents/projects/SoilSensitivity/scripts",
+    "sortOrder" : [
+        {
+            "ascending" : false,
+            "columnIndex" : 4
+        },
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}

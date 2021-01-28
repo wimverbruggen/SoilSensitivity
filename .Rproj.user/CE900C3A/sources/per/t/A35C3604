@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1597959786653.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1739922967",
+    "id" : "A35C3604",
+    "lastKnownWriteTime" : 1597959798,
+    "last_content_update" : 1597959798458,
+    "path" : "~/Documents/projects/SoilSensitivity/R/components2ntext_soil.R",
+    "project_path" : "R/components2ntext_soil.R",
+    "properties" : {
+        "cursorPosition" : "48,15",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

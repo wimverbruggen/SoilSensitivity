@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1605724765488.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "154CE0A",
+    "lastKnownWriteTime" : 1598051001,
+    "last_content_update" : 1598051001,
+    "path" : "/home/femeunier/Documents/projects/SoilSensitivity/scripts/plot_map_texture.R",
+    "project_path" : "scripts/plot_map_texture.R",
+    "properties" : {
+        "cursorPosition" : "8,14",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

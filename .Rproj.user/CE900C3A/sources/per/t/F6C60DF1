@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1597851321553.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2416586054",
+    "id" : "F6C60DF1",
+    "lastKnownWriteTime" : 1595425997,
+    "last_content_update" : 1595425997,
+    "path" : "~/Documents/projects/LSliana/scripts/generate_IC.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "236,7",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

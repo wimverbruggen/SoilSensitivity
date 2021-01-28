@@ -1,0 +1,293 @@
+rm(list = ls())
+
+library(rhdf5)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(cowplot)
+library(stringr)
+library(R.utils)
+library(viridis)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(raster)
+library(rgdal)
+
+source("~/Documents/ED2/R-utils/h5read_opt.r")
+
+add.liana = TRUE
+cssfile_base <- "Amazon_liana"
+
+# Climate
+Climate <- readRDS("./output/Climate.RDS")
+
+Climate_sum <- Climate %>% filter(!is.na(value),
+                                  variable == "PRate") %>% group_by(variable,year,month,lat,lon) %>% summarise(m = sum(value,na.rm=TRUE),
+                                                                                                               s = sd(value,na.rm=TRUE))
+
+Climate_month <- Climate_sum %>% ungroup() %>% mutate(m = case_when(variable == "PRate" ~ m*60*60,
+                                                                    variable == "tmp" ~ m - 273.15,
+                                                                    TRUE ~ m))
+
+Climate_year <- bind_rows(list(Climate_month %>% filter(variable == "PRate") %>% group_by(variable,year,lat,lon) %>% summarise(m = sum(m)),
+                               Climate_month %>% filter(variable != "PRate") %>% group_by(variable,year,lat,lon) %>% summarise(m = mean(m))))
+
+ED_REG_LATMIN = -17.5
+ED_REG_LATMAX = 12.5
+ED_REG_LONMIN = -81.5
+ED_REG_LONMAX = -34.5
+GRID_RES = 1
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# ggplot(data = Climate_year  %>% filter(lat<=ED_REG_LATMAX,lat>=ED_REG_LATMIN,lon<=ED_REG_LONMAX,lon>=ED_REG_LONMIN,
+#                                        year == 2000)) +
+#   geom_raster(aes(x=lon, y = lat, fill=m),alpha = 0.3) +
+#   geom_sf(data = world,fill = NA) +
+#   coord_sf(xlim = c(ED_REG_LONMIN, ED_REG_LONMAX), ylim = c(ED_REG_LATMIN, ED_REG_LATMAX), expand = FALSE) +
+#   scale_fill_viridis(direction = -1) +
+#   theme_bw()
+
+
+PRates <- Climate_year %>% filter(variable == "PRate")
+PRates.lat <- PRates %>% pull(lat);
+PRates.lon <- PRates %>% pull(lon);
+
+# History files
+directory <- "/home/femeunier/Downloads/CLU"
+files <- list.files(directory)
+df <- file_pos <- data.frame()
+
+# Read them all
+for (ifile in seq(1,length(files))){
+  h5file = file.path(directory,files[ifile])
+  temp.file = file.path(tempdir(),basename(h5file))
+  dummy     = gunzip(filename=h5file,destname=temp.file,remove=FALSE)
+  mymont    = lapply(h5read_opt(temp.file),FUN=aperm)
+  names(mymont) <- gsub(x = names(mymont), pattern = "\\_", replacement = ".")
+  dummy     = file.remove(temp.file)
+
+  lat <- mymont$LATITUDE
+  lon <- mymont$LONGITUDE
+
+  file_pos <-  bind_rows(list(file_pos,
+                              data.frame(lat,lon,basename(h5file))))
+
+  PA_area <- mymont$AREA
+
+  # Cohorts
+  DBH <- mymont$DBH
+  PFT <- mymont$PFT
+  NPLANT <- mymont$NPLANT
+  PACO <- rep(1:mymont$NPATCHES.GLOBAL,mymont$PACO.N)
+  AREA <- PA_area[PACO]
+
+  # Patch
+  SSC <- mymont$SLOW.SOIL.C
+  FSC <- mymont$FAST.SOIL.C
+  StrucSC <- mymont$STRUCTURAL.SOIL.C
+
+  # cCSS <- data.frame(num=1:length(PFT),DBH,PFT,NPLANT,patch = PACO)
+  # cCSS_sum <- cCSS %>% group_by(patch,PFT) %>% summarise(n = sum(NPLANT))
+
+  DBHm <- mean(DBH)
+  AGB <- sum(mymont$AGB)
+
+  df <- bind_rows(list(df,
+                       data.frame(lat,lon,DBHm,AGB,
+                                  StrucSC=weighted.mean(StrucSC,PA_area),
+                                  SSC=weighted.mean(SSC,PA_area),
+                                  FSC=weighted.mean(FSC,PA_area))))
+}
+
+
+
+ggplot(data = df  %>% filter(lat<=ED_REG_LATMAX,lat>=ED_REG_LATMIN,lon<=ED_REG_LONMAX,lon>=ED_REG_LONMIN)) +
+  geom_raster(aes(x=lon, y = lat, fill=StrucSC),alpha = 0.3) +
+  geom_sf(data = world,fill = NA) +
+  coord_sf(xlim = c(ED_REG_LONMIN, ED_REG_LONMAX), ylim = c(ED_REG_LATMIN, ED_REG_LATMAX), expand = FALSE) +
+  scale_fill_viridis(direction = -1) +
+  theme_bw()
+
+# Merge with Mask
+
+land <- readRDS("./data/landmask.RDS")
+
+lats <- file_pos %>% pull(lat)
+lons <- file_pos %>% pull(lon)
+
+X = seq(ED_REG_LONMIN,ED_REG_LONMAX,GRID_RES)
+Y = seq(ED_REG_LATMIN,ED_REG_LATMAX,GRID_RES)
+
+land_IC <- land
+
+IC <- matrix(NA,nrow = length(Y),length(X))
+
+file <- "~/Downloads/ocs_0-30cm_mean.tif"
+OCS = raster(file)
+OCS.aggregate <- aggregate(OCS, fact=10)
+
+df.soil <- data.frame()
+
+maxpatch <- 0
+maxcohort <- 0
+
+for(ix in seq(1,length(X))){
+  for(iy in seq(1,length(Y))){
+
+    clat = Y[iy]; clon = X[ix]
+
+    if (land[which(rownames(land)==clat),
+             which(colnames(land)==clon)]){
+
+
+      pos <- which.min((lats-clat)**2 + (lons-clon)**2)
+      print(c(clat,clon,lats[pos],lons[pos]))
+      file <- file.path(directory,file_pos %>% pull(basename.h5file.))[pos]
+
+      # History file
+      h5file = file
+      temp.file = file.path(tempdir(),basename(h5file))
+      dummy     = gunzip(filename=h5file,destname=temp.file,remove=FALSE)
+      mymont    = lapply(h5read_opt(temp.file),FUN=aperm)
+      names(mymont) <- gsub(x = names(mymont), pattern = "\\_", replacement = ".")
+      dummy     = file.remove(temp.file)
+
+      lat <- mymont$LATITUDE
+      lon <- mymont$LONGITUDE
+      PA_area <- mymont$AREA
+
+      # Cohorts
+      DBH <- mymont$DBH
+      HITE <- mymont$HITE
+      BDEAD <- mymont$BDEAD
+      BALIVE <- mymont$BALIVE
+      LAI <- mymont$LAI.CO
+      PFT <- mymont$PFT
+      NPLANT <- mymont$NPLANT
+      PACO <- rep(1:mymont$NPATCHES.GLOBAL,mymont$PACO.N)
+      AREA <- PA_area[PACO]
+
+      # Patch
+      SSC <- mymont$SLOW.SOIL.C
+      FSC <- mymont$FAST.SOIL.C
+      StrucSC <- mymont$STRUCTURAL.SOIL.C
+      StrucSL <- mymont$STRUCTURAL.SOIL.L
+      FSN <- mymont$FAST.SOIL.N
+      MSN <- mymont$MINERALIZED.SOIL.N
+
+
+      if (!is.null(DBH)){
+
+        if (add.liana & any(c(2,3,4) %in% PFT)){
+
+          # if (1 %in% PFT) stop()
+          cMAP <- Climate_year %>% filter(lat == clat,lon == clon,variable == "PRate") %>% pull(m)
+          if (length(cMAP)<1){
+            pos_MAP <- which.min((PRates.lat - clat)**2 + (PRates.lon - clon)**2)
+            cMAP <- mean(PRates[pos_MAP,] %>% pull(m))
+          } else{
+            cMAP <- mean(cMAP)
+          }
+
+          Liana_density <- (10*(85.5 -0.00824*cMAP))/10000 # #/m²
+
+          summ <- table(data.frame(c(PACO,PACO),c(PFT,rep(18,length(PFT)))))
+
+          if (1 %in% unique(PFT)){
+            pos_patches <- which(summ[,"18"]>0 & (summ[,"1"] != summ[,"18"]))
+            # correct liana_density according to PA area
+            tot.area <- sum(PA_area[pos_patches])
+            Liana_density <- Liana_density/tot.area
+          } else{
+            pos_patches <- unique(PACO)
+          }
+          Npatches <- length(pos_patches)
+
+          maxH <- pmax(35.,
+                       data.frame(HITE,PACO) %>% filter(PACO %in% pos_patches) %>% group_by(PACO) %>% summarise(h = max(HITE)) %>% pull(h))
+
+          PACO <- c(PACO,as.vector(pos_patches))
+          PFT <- c(PFT,rep(17,Npatches))
+          DBH <- c(DBH,rep(2.5,Npatches))
+          HITE <- c(HITE,maxH+0.5)
+          NPLANT <- c(NPLANT,rep(Liana_density,Npatches))
+          BDEAD <- c(BDEAD,rep(0,Npatches))
+          BALIVE <- c(BALIVE,rep(0,Npatches))
+          LAI <- c(LAI,rep(0,Npatches))
+        }
+
+
+        if (maxpatch < length(PA_area)) maxpatch = length(PA_area)
+        if (maxcohort < length(LAI)) maxcohort = length(LAI)
+
+        #css file
+        cssfile = data.frame(time = 2000,patch = PACO, cohort = 1:length(PFT), dbh = DBH, hite = HITE,
+                             pft = PFT, n = NPLANT, bdead = BDEAD, balive = BALIVE, lai = LAI)
+
+        cpfts <- unique(cssfile$pft)
+
+        csspssfile_name <- paste0(cssfile_base,".lat",sprintf("%.4f",Y[iy]),"lon",sprintf("%.4f",X[ix]))
+
+        write.table(x = cssfile,
+                    file = file.path("/home/femeunier/Documents/data/amazon/IC",paste0(csspssfile_name,".css")),row.names = FALSE,col.names = TRUE)
+
+        #pss file
+        e <- extent(X[ix]-GRID_RES/2,X[ix]+GRID_RES/2,Y[iy]-GRID_RES/2,Y[iy]+GRID_RES/2)
+        cOCS <- raster::extract(OCS.aggregate, e)
+        mOCS <- mean(cOCS,na.rm=TRUE)/10 # T/ha --> kg/m²
+        # plot(OCS.aggregate)
+        # plot(e, add=T)
+
+        if(all(is.na(cOCS))){
+          stop("problem with cOCS")
+        }
+
+        ctot.per.patch = SSC + FSC + StrucSC
+        SSC <- mOCS*SSC/ctot.per.patch
+        FSC <- mOCS*FSC/ctot.per.patch
+        StrucSC <- StrucSL <- mOCS*StrucSC/ctot.per.patch
+
+        # StrucSC <- StrucSC <- pmax(mOCS-ctot.per.patch,0)
+
+
+        df.soil <- bind_rows(list(df.soil,
+                             data.frame(lat=clat,lon=clon,
+                                        StrucSC=weighted.mean(StrucSC,PA_area),
+                                        SSC=weighted.mean(SSC,PA_area),
+                                        FSC=weighted.mean(FSC,PA_area))))
+
+        pssfile = data.frame(time = 2000,patch=1:length(SSC),trk=2,age=0,area=PA_area,water=0,fsc=FSC,stsc=StrucSC,stsl=StrucSL,
+                             ssc=SSC,lai=5,msn=MSN,fsn=FSN,nep=0,gpp=0,rh=0)
+
+        write.table(x = pssfile,
+                    file = file.path("/home/femeunier/Documents/data/amazon/IC",paste0(csspssfile_name,".pss")),row.names = FALSE,col.names = TRUE)
+
+        IC[length(Y)-iy+1,ix] <- csspssfile_name
+      } else {
+        print("No data here")
+        land_IC[length(Y)-iy+1,ix] <- FALSE
+      }
+    }
+  }
+}
+
+saveRDS(object = land_IC,file = "./data/land_IC.RDS")
+
+system2("rsync",paste("-avz",
+                      "/home/femeunier/Documents/data/amazon/IC/*",
+                      "hpc:/data/gent/vo/000/gvo00074/pecan/output/other_runs/LSliana/IC/"))
+
+# system2("scp",paste("./data/land_IC.RDS",
+#                     "hpc:/data/gent/vo/000/gvo00074/felicien/R"))
+
+# world <- ne_countries(scale = "medium", returnclass = "sf")
+#
+# ggplot(data = df.soil  %>% filter(lat<=ED_REG_LATMAX,lat>=ED_REG_LATMIN,lon<=ED_REG_LONMAX,lon>=ED_REG_LONMIN)) +
+#   geom_raster(aes(x=lon, y = lat, fill=StrucSC+SSC+FSC),alpha = 0.3) +
+#   geom_sf(data = world,fill = NA) +
+#   coord_sf(xlim = c(ED_REG_LONMIN, ED_REG_LONMAX), ylim = c(ED_REG_LATMIN, ED_REG_LATMAX), expand = FALSE) +
+#   scale_fill_viridis(direction = -1) +
+#   theme_bw()
+

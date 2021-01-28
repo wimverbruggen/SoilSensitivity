@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1597859474965.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "184190692",
+    "id" : "1B8465C7",
+    "lastKnownWriteTime" : 1598050415,
+    "last_content_update" : 1598050415670,
+    "path" : "~/Documents/projects/SoilSensitivity/scripts/plot_OP.R",
+    "project_path" : "scripts/plot_OP.R",
+    "properties" : {
+        "cursorPosition" : "30,60",
+        "scrollLine" : "27",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
