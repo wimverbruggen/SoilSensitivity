@@ -230,13 +230,13 @@ get_soilproperties <- function(sand = 0.5, clay = 0.5, model="ED", orc_map="zobl
 
     return(list(theta_sat = theta_sat,
                 theta_wp = theta_wp,
-                theta_fc = theta_whc,
+                theta_fc = theta_fc,
                 theta_res = theta_res,
                 b = NA, # not used in orchidee
                 k_sat = k_sat,
                 psi_sat = NA, # not used in orchidee
                 n=n, # Van Genuchten parameter needed for K and D Van Genuchten(1980)
-                alpha=alpha, # inverse of the air entry suction needed for K and D Van Genuchten (1980)
+                alpha=alpha # inverse of the air entry suction needed for K and D Van Genuchten (1980)
     ))
 
 
