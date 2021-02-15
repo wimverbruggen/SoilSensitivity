@@ -20,31 +20,36 @@ top.clay.mean <- raster::aggregate(rc[[c(2)]],
                                    1 / res(rc)[2] * 0.5,
                                    fun = mean)
 
+alpha = 0.01
+
 top.sand.min.clay <- aggregates(
   raster1 = rc[[c(2)]],
   raster2 = rc[[c(1)]],
   res1 = 1 / res(rc)[1] * 0.5,
   res2 = 1 / res(rc)[1] * 0.5,
-  FUN = "min"
-)
+  probs = alpha)
 
 top.sand.max.clay <- aggregates(
   raster1 = rc[[c(2)]],
   raster2 = rc[[c(1)]],
   res1 = 1 / res(rc)[1] * 0.5,
   res2 = 1 / res(rc)[1] * 0.5,
-  FUN = "max"
-)
+  probs = 1 - alpha)
 
-top.clay.max.clay <- raster::aggregate(rc[[c(2)]],
-                                   1 / res(rc)[1] * 0.5,
-                                   1 / res(rc)[2] * 0.5,
-                                   fun = max)
+top.clay.max.clay <- aggregates(
+  raster1 = rc[[c(2)]],
+  raster2 = rc[[c(2)]],
+  res1 = 1 / res(rc)[1] * 0.5,
+  res2 = 1 / res(rc)[1] * 0.5,
+  probs = 1 - alpha)
 
-top.clay.min.clay <- raster::aggregate(rc[[c(2)]],
-                                   1 / res(rc)[1] * 0.5,
-                                   1 / res(rc)[2] * 0.5,
-                                   fun = min)
+top.clay.min.clay <- aggregates(
+  raster1 = rc[[c(2)]],
+  raster2 = rc[[c(2)]],
+  res1 = 1 / res(rc)[1] * 0.5,
+  res2 = 1 / res(rc)[1] * 0.5,
+  probs = alpha)
+
 
 writeRaster(top.sand.mean, filename=file.path(".","maps", "soilgrid_top.sand_mean.grd"),overwrite = TRUE)
 writeRaster(top.clay.mean, filename=file.path(".","maps", "soilgrid_top.clay_mean.grd"),overwrite = TRUE)
@@ -56,6 +61,7 @@ writeRaster(top.clay.min.clay, filename=file.path(".","maps", "soilgrid_top.clay
 
 par(mfrow = c(2, 1))
 plot(top.clay.min.clay)
+
 plot(top.sand.min.clay)
 top.clay.min.clay + top.sand.min.clay
 

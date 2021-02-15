@@ -16,12 +16,9 @@ X = seq(ED_REG_LONMIN,ED_REG_LONMAX-Delta_X,Delta_X)
 Y = seq(ED_REG_LATMIN,ED_REG_LATMAX-Delta_Y,Delta_Y)
 
 
-depths <- c("0-5","5-15","15-30","30-60","60-100","100-200")
-<<<<<<< HEAD
-=======
-# depths <- c("0-5","100-200")
->>>>>>> Very first commit
-vars <- c("sand","clay")
+depths <- c("0-5")
+
+vars <- c("soc")
 grid <- expand.grid(lon=X, lat=Y)
 
 files <- list() ; files_not_downloaded <- list() ; compt <- 1
@@ -39,13 +36,13 @@ for (i in seq(1,nrow(grid))){
       varname <- paste(vars[ivar],depths[idepth],sep = "_")
 
       cvar <- tryCatch(download.soilGrid.psims (var = vars[ivar],
-                                       depth = depths[idepth],
-                                       product = "mean",
-                                       long.min = as.character(clon),
-                                       long.max = as.character(clon + Delta_X),
-                                       lat.min = as.character(clat),
-                                       lat.max = as.character(clat + Delta_Y),
-                                       resam.pix=240),
+                                                depth = depths[idepth],
+                                                product = "mean",
+                                                long.min = as.character(clon),
+                                                long.max = as.character(clon + Delta_X),
+                                                lat.min = as.character(clat),
+                                                lat.max = as.character(clat + Delta_Y),
+                                                resam.pix=240),
                        error = function(err){NA})
 
       if (!is.na(cvar[1])){
@@ -96,58 +93,7 @@ for (i in seq(1,length(files_not_downloaded))){
 
 m <- do.call(merge, files)
 names(m) <- names(cstack)
+values(m) <- values(m)/10/1000
 plot(m)
 
-for (i in seq(1,dim(m)[3]/2)){
-  print(i)
-  sand <- raster::as.matrix(m[[(i-1)*2+1]])
-  clay <- raster::as.matrix(m[[(i-1)*2+2]])
-  silt <- 1-sand-clay
-  text <- components2ntext_soil(sand,silt,clay)
-  text_raster <- raster(text)
-  extent(text_raster) <- extent(m[[1]])
-  text_raster.aggregate <- raster::aggregate(text_raster,
-                                             1/c(res(text_raster)[1],res(text_raster)[2]),fun = get_mode)
-
-  if (i>1){
-    text.all <- stack(text.all,text_raster.aggregate)
-  } else {
-    text.all <- text_raster.aggregate
-  }
-}
-
-names(text.all) <- depths
-rf <- writeRaster(text.all, filename=file.path(".","maps", "soilgrid_all.grd"))
-
-rc <- brick(file.path(".","maps", "soilgrid.grd"))
-raster.aggregate <- raster::aggregate(m,1/c(res(m)[1],res(m)[2]),fun = get_mode)
-# rf <- writeRaster(raster.aggregate, filename=file.path(".","maps", "soilgrid_all.grd"))
-
-
-1-rc[[1]]-rc[[2]]
-plot(1-rc[[1]]-rc[[2]])
-#
-# # top soil
-sand <- raster::as.matrix(rc[[1]])
-clay <- raster::as.matrix(rc[[2]])
-silt <- 1-sand-clay
-text <- components2ntext_soil(sand,silt,clay)
-text_tp <- raster(text)
-extent(text_tp) <- extent(rc[[1]])
-plot(rc[[2]])
-
-# # sub soil
-# sand <- raster::as.matrix(rc[[3]])
-# clay <- raster::as.matrix(rc[[4]])
-# silt <- 1-sand-clay
-# text <- components2ntext_soil(sand,silt,clay)
-# text_sb <- raster(text)
-# extent(text_sb) <- extent(rc[[3]])
-# plot(text_sb)
-#
-top <- raster::aggregate(text_tp,1/c(res(text_tp)[1],res(text_tp)[2]),fun = get_mode)
-sub <- raster::aggregate(text_sb,1/c(res(text_sb)[1],res(text_sb)[2]),fun = get_mode)
-#
-# writeRaster(top, filename=file.path(".","maps", "soilgrid_top.grd"),overwrite = TRUE)
-# writeRaster(sub, filename=file.path(".","maps", "soilgrid_sub.grd"),overwrite = TRUE)
-
+rf <- writeRaster(m, filename=file.path(".","maps", "soilgrid_soc.grd"))

@@ -1,9 +1,9 @@
 [general]
 creator=R package 'raster'
-created=2021-02-03 20:32:05
+created=2021-02-03 21:05:05
 [georeference]
-nrows=68
-ncols=108
+nrows=4080
+ncols=6480
 xmin=-85
 ymin=-20
 xmax=-31
@@ -16,11 +16,11 @@ nbands=1
 bandorder=BIL
 categorical=FALSE
 minvalue=0
-maxvalue=0.865460932254791
+maxvalue=0.000266936789550789
 nodatavalue=-3.4e+38
 [legend]
 legendtype=
 values=
 color=
 [description]
-layername=clay_0.5
+layername=soc_0.5
