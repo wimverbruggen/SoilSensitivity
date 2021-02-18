@@ -3,10 +3,11 @@ rm(list = ls())
 library(ncdf4)
 
 # Inputs
-outfolder <- "/home/carya/output/dbfiles/Test"
-# outfolder <- "/data/gent/vo/000/gvo00074/ED_common_data/met/CRUNCEP"
 
-years <- 1901
+outfolder <- "/home/carya/output/dbfiles/Test"
+outfolder <- "/data/gent/vo/000/gvo00074/ED_common_data/met/CRUNCEP"
+
+years <- 1901:1910
 
 lat.in <- -20
 Delta_lat <- 35
@@ -25,6 +26,7 @@ var <- tibble::tribble(~DAP.name, ~CF.name, ~units, "tair",
                        "uwind", "eastward_wind", "m/s", "vwind", "northward_wind",
                        "m/s", "qair", "specific_humidity", "g/g", "rain", "precipitation_flux",
                        "kg/m2/s")
+
 
 ylist <- seq(years[1], years[length(years)], by = 1)
 rows <- length(ylist)
@@ -55,7 +57,7 @@ for (i in seq(1,length(years))){
     time <- ncdf4::ncdim_def(name = "time", units = paste0("days since ",
                                                            year, "-01-01T00:00:00Z"), vals = as.array(days_elapsed),
                              create_dimvar = TRUE, unlim = TRUE)
-    dim <- list(lat, lon, time)
+    dim <- list(lon,lat, time)
 
 
     loc.file <- file.path(outfolder, paste("CRUNCEP", year,
@@ -100,7 +102,10 @@ for (i in seq(1,length(years))){
   }
 
 
-  dat.list[[8]] <- dat.list[[8]]/21600
+  if (length(dat.list)>=8){
+    dat.list[[8]] <- dat.list[[8]]/21600
+  }
+
   loc <- ncdf4::nc_create(filename = loc.file, vars = var.list,
                           verbose = verbose)
   for (j in seq_len(nrow(var))) {
