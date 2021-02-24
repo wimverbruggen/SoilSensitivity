@@ -14,6 +14,6 @@ names(mymont) <- gsub(x = names(mymont), pattern = "\\_", replacement = ".")
 sum(mymont$LAI.CO)
 
 
-for (i in seq(10553220,10553403)){
+for (i in seq(10563176,10563206)){
   system2("qdel",i)
 }
