@@ -19,7 +19,7 @@ files <- c(
   "soilgrid_top.sand_min.grd",
   "soilgrid_top.soc_mean.grd",
   "soilgrid_top.soc_min.grd",
-  "soilgrid_top.soc_min.grd"
+  "soilgrid_top.soc_max.grd"
 )
 
 ED_REG_LATMIN = -19.5
@@ -33,7 +33,7 @@ X = seq(ED_REG_LONMIN,ED_REG_LONMAX,GRID_RES)
 Y = seq(ED_REG_LATMIN,ED_REG_LATMAX,GRID_RES)
 
 R = raster(nrows=length(Y), ncols=length(X),
-           xmn=ED_REG_LONMIN-0.25, xmx=ED_REG_LONMAX-0.25,
+           xmn=ED_REG_LONMIN-0.25, xmx=ED_REG_LONMAX+0.25,
            ymn=ED_REG_LATMIN-0.25, ymx=ED_REG_LATMAX + 0.25, vals=NULL)
 
 par(mfrow = c(2,1))

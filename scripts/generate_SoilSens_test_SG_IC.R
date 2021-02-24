@@ -78,14 +78,14 @@ config[["Late"]] <- unlist(list(num = 4,
 
 scenars <- c("SoilGrids_mean","SoilGrids_min","SoilGrids_max")
 
-soilgrids_mean <- stack(brick(file.path("maps","soilgrid_top.sand_mean.grd")),
-                        brick(file.path("maps","soilgrid_top.clay_mean.grd")))
+soilgrids_mean <- stack(brick(file.path("maps","soilgrid_top.sand_mean_resampled.grd")),
+                        brick(file.path("maps","soilgrid_top.clay_mean_resampled.grd")))
 
-soilgrids_min <- stack(brick(file.path("maps","soilgrid_top.sand_min.grd")),
-                       brick(file.path("maps","soilgrid_top.clay_min.grd")))
+soilgrids_min <- stack(brick(file.path("maps","soilgrid_top.sand_min_resampled.grd")),
+                       brick(file.path("maps","soilgrid_top.clay_min_resampled.grd")))
 
-soilgrids_max <- stack(brick(file.path("maps","soilgrid_top.sand_max.grd")),
-                       brick(file.path("maps","soilgrid_top.clay_max.grd")))
+soilgrids_max <- stack(brick(file.path("maps","soilgrid_top.sand_max_resampled.grd")),
+                       brick(file.path("maps","soilgrid_top.clay_max_resampled.grd")))
 
 all_depths <- c(-8,-7,-6.2,-5.5,-4.9,-4.3,-3.8,-3.3,-2.8,-2.3,-1.8,-1.3,-1,-0.6,-0.3,-0.15)
 
