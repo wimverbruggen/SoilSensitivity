@@ -15,6 +15,9 @@ top.sand.mean <- raster::aggregate(rc[[c(1)]],
                                    1 / res(rc)[2] * 0.5,
                                    fun = mean)
 
+
+# resample
+
 top.clay.mean <- raster::aggregate(rc[[c(2)]],
                                    1 / res(rc)[1] * 0.5,
                                    1 / res(rc)[2] * 0.5,
